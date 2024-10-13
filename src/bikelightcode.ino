@@ -9,6 +9,7 @@ const int photoresistorPin = A0;
 Adafruit_MMA8451 mma = Adafruit_MMA8451();
 int counter = 255;
 bool lightOn = true;
+double lastXAccel = 0;
 
 void setup() {
   // put your setup code here, to run once:
@@ -40,13 +41,13 @@ void loop() {
   sensors_event_t event; 
   mma.getEvent(&event);
   double xAccel = abs(event.acceleration.y); 
-  Serial.println(xAccel);
+  double xSpeed = abs(xAccel - lastXAccel)/0.1;
   
   if(lightOn) {
-    if(xAccel > 10) {
+    if(xSpeed > 10) {
       analogWrite(LED_PIN, 75);
     }
-    else if(xAccel > 5) {
+    else if(xSpeed > 5) {
       // while(counter != 180) {
       //   if(counter > 180) {
       //     counter--;
@@ -59,7 +60,7 @@ void loop() {
       // }
       analogWrite(LED_PIN, 60);
     }
-    else if(xAccel > 2) {
+    else if(xSpeed > 2) {
       // while(counter > 100) {
       //   if(counter > 100) {
       //     counter--;
@@ -89,6 +90,9 @@ void loop() {
   else {
     analogWrite(LED_PIN, 0);
   }
+
+  lastXAccel = xAccel;
+
   delay(100);
   
   
